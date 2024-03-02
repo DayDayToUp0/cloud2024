@@ -1,0 +1,64 @@
+server:
+  port: 9527
+
+spring:
+  application:
+    name: cloud-gateway #以微服务注册进consul或nacos服务列表内
+  cloud:
+    consul: #配置consul地址
+      host: localhost
+      port: 8500
+      discovery:
+        prefer-ip-address: true
+        service-name: ${spring.application.name}
+
+
+    gateway:
+      enabled: true
+      routes:
+        - id: pay_routh1
+#          uri: http://localhost:8001
+          uri: lb://cloud-payment-service
+          predicates:
+            - Path=/pay/gateway/get/**
+            - After=2024-03-01T11:11:20.000+08:00[Asia/Shanghai]
+            - My=Cu
+#            - name: My
+#              args:
+#                 userType: diamond
+
+#            - Cookie=username,cxt
+#            - Header=X-Request-Id, \d+
+#            - Host=**.cxt.com
+#            - Query=user,\d+
+#            - Before=2024-03 -01T11:11:40.000+08:00[Asia/Shanghai]
+#            - Between=2024-03-01T11:12:20.000+08:00[Asia/Shanghai], 2024-03-01T11:12:40.000+08:00[Asia/Shanghai]
+
+
+        - id: pay_routh2
+#          uri: http://localhost:8001
+          uri: lb://cloud-payment-service
+          predicates:
+            - Path=/pay/gateway/info/**
+
+        - id: pay_routh3
+          uri: lb://cloud-payment-service
+          predicates:
+            - Path=/pay/gateway/filter/**
+#            - Path=/gateway/filter/**
+#            - Path=/a/b/c/{segment}
+          filters:
+             - MyCustomer=cxt1
+#            - PrefixPath=/pay
+#            - SetPath=/pay/gateway/{segment}
+#            - RedirectTo=302, https://www.baidu.com
+
+#            - AddRequestHeader=X-Request-CXT,20613
+#            - AddRequestHeader=X-Request-CXT1,206131
+#            - RemoveRequestHeader=sec-fetch-site
+#            - SetRequestHeader=sec-fetch-mode,cxt
+#            - AddRequestParameter=age, 18
+#            - RemoveRequestParameter=name
+#            - AddResponseHeader=X-Response-CXT,xixi
+#            - RemoveResponseHeader=Content-Type
+#            - SetResponseHeader=Date,21999-11-9
